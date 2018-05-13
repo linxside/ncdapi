@@ -1,8 +1,10 @@
 #/bin/bash
 
+#Credentials
 apikey=YOUR_API_KEY
 apipw=YOUR_API_PASSWORD
 cid=YOUR_CUSTOMERNUMBER
+
 end=https://ccp.netcup.net/run/webservice/servers/endpoint.php?JSON
 client=""
 debug=false
