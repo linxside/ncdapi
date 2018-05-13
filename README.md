@@ -2,7 +2,13 @@
 ## WARNING
 The nc API is still under developement and this client also. This client is well tested, but it is possible that some actions provoke a bug, so the use of this client is on your own risk and may result in lost of your zone data (not your domain).
 
-## Functions
+### Credentials
+To use this script you must replace the values at beginning of the script with your:
+- API Key
+- API PASSWORD
+- CUSTOMERNUMBER
+
+### Functions
 * add new record
 * modify record
 * delete record
@@ -10,7 +16,7 @@ The nc API is still under developement and this client also. This client is well
 * backup/restore of zone
 * install
 
-## Help
+### Help
 ```
 IMPORTANT: Only ONE Argument like -N or -dN
 If you have a string which is including spaces use "around your string"
