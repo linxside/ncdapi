@@ -1,4 +1,5 @@
 #/bin/bash
+#developed by linux-insideDE @GPN18
 
 #Credentials
 apikey=YOUR_API_KEY
@@ -17,6 +18,10 @@ login() {
 		msg=$(echo ${tmp} | jq -r .shortmessage)
 		echo $msg
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		return 1
+	fi
 }
 logout() {
 	tmp=$(curl -s -X POST -d '{"action": "logout", "param": {"apikey": "'$apikey'", "apisessionid": "'$sid'", "customernumber": "'$cid'"}}' $end)
@@ -24,12 +29,20 @@ logout() {
 		msg=$(echo ${tmp} | jq -r .shortmessage)
 		echo $msg
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		return 1
+	fi
 }
 addRecord() {
 	login	
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$2\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"\", \"hostname\": \"$1\", \"type\": \"$3\", \"priority\": \"${5:-"0"}\", \"destination\": \"$4\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" $end)
 	if [ $debug = true ]; then
 		echo ${tmp}
+	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		return 1
 	fi
 	logout
 }
@@ -39,6 +52,10 @@ delRecord() {
 	if [ $debug = true ]; then
 		echo ${tmp}
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		return 1
+	fi
 	logout
 }
 modRecord() {
@@ -46,6 +63,10 @@ modRecord() {
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$3\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"$1\", \"hostname\": \"$2\", \"type\": \"$4\", \"priority\": \"${6:-"0"}\", \"destination\": \"$5\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" $end)
 	if [ $debug = true ]; then
 		echo ${tmp}
+	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		return 1
 	fi
 	logout
 }
@@ -85,6 +106,10 @@ restore() {
 		if [ $debug = true ]; then
 			echo ${tmp}
 		fi
+		if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+			echo "Error: $tmp"
+			return 1
+		fi
 		inc=$((inc+1))
 	done
 		
@@ -99,6 +124,10 @@ restore() {
 	    tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$1\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"\", \"hostname\": \"$host\", \"type\": \"$type\", \"priority\": \"$prio\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" $end)
 		if [ $debug = true ]; then
 			echo ${tmp}
+		fi
+		if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+			echo "Error: $tmp"
+			return 1
 		fi
 		inc=$((inc+1))
 	done	
@@ -121,13 +150,13 @@ help() {
 	echo "IMPORTANT: Only ONE Argument like -N or -dN"
 	echo "If you have a string which is including spaces use \"around your string\""
 	echo ""
-	echo "-d   Debug Mode   ncapi.sh -d..."
-	echo "-N   NEW Record	  ncapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
-	echo "-M   MOD Record	  ncapi.sh -N ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
-	echo "-D   DEL Record	  ncapi.sh -D ID HOST DOMAIN HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
-	echo "-g   get all Records	ncapi.sh -g DOAMIN"
-	echo "-b   backup from Zone	ncapi.sh -b DOMAIN"
-	echo "-R   Restore Zone	ncapi.sh -R DOMAIN DATEI"
+	echo "-d   Debug Mode   ncdapi.sh -d..."
+	echo "-N   NEW Record	  ncdapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
+	echo "-M   MOD Record	  ncdapi.sh -N ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
+	echo "-D   DEL Record	  ncdapi.sh -D ID HOST DOMAIN HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
+	echo "-g   get all Records	ncdapi.sh -g DOAMIN"
+	echo "-b   backup from Zone	ncdapi.sh -b DOMAIN"
+	echo "-R   Restore Zone	ncdapi.sh -R DOMAIN DATEI"
 	echo "-I   Install Script"
 	echo "-h   this help"
 }
