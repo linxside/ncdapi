@@ -21,13 +21,14 @@ To use this script you must replace the values at beginning of the script with y
 IMPORTANT: Only ONE Argument like -N or -dN
 If you have a string which is including spaces use "around your string"
   
--d   Debug Mode   ncapi.sh -d...
--N   NEW Record	  ncapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
--M   MOD Record	  ncapi.sh -N ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
--D   DEL Record	  ncapi.sh -D ID HOST DOMAIN HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
--g   get all Records	ncapi.sh -g DOAMIN
--b   backup from Zone	ncapi.sh -b DOMAIN
--R   Restore Zone	ncapi.sh -R DOMAIN FILE
+-d   Debug Mode   ncdapi.sh -d...
+-N   NEW Record	  ncdapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
+-M   MOD Record	  ncdapi.sh -N ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
+-D   DEL Record	  ncdapi.sh -D ID HOST DOMAIN HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
+-g   get all Records	ncdapi.sh -g DOAMIN
+-b   backup from Zone	ncdapi.sh -b DOMAIN
+-R   Restore Zone	ncdapi.sh -R DOMAIN FILE
 -I   Install Script
 -h   this help
 ```
+developed by linux-insideDE @GPN18
