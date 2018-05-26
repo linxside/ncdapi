@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 #developed by linux-insideDE @GPN18
 
 #Credentials
