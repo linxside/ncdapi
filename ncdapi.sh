@@ -18,6 +18,11 @@ login() {
 		msg=$(echo "${tmp}" | jq -r .shortmessage)
 		echo "$msg"
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		logout
+		return 1
+	fi
 }
 logout() {
 	tmp=$(curl -s -X POST -d "{\"action\": \"logout\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\"}}" "$end")
@@ -25,12 +30,21 @@ logout() {
 		msg=$(echo "${tmp}" | jq -r .shortmessage)
 		echo "$msg"
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		return 1
+	fi
 }
 addRecord() {
 	login	
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$2\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"\", \"hostname\": \"$1\", \"type\": \"$3\", \"priority\": \"${5:-"0"}\", \"destination\": \"$4\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" "$end")
 	if [ $debug = true ]; then
 		echo "${tmp}"
+	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		logout
+		return 1
 	fi
 	logout
 }
@@ -40,6 +54,11 @@ delRecord() {
 	if [ $debug = true ]; then
 		echo "${tmp}"
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		logout
+		return 1
+	fi
 	logout
 }
 modRecord() {
@@ -48,13 +67,20 @@ modRecord() {
 	if [ $debug = true ]; then
 		echo "${tmp}"
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		logout
+		return 1
+	fi
 	logout
 }
 getRecords() {
 	login	
 	tmp=$(curl -s -X POST -d "{\"action\": \"infoDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\", \"domainname\": \"$1\"}}" "$end")
-	if [ $debug = true ]; then
-		echo "${tmp}"
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		logout
+		return 1
 	fi
 	xxd=$(echo "${tmp}" | jq -r '.responsedata.dnsrecords | .[]')
 	echo "$xxd"
@@ -97,6 +123,11 @@ restore() {
 	if [ $debug = true ]; then
 		echo "${tmp}"
 	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		logout
+		return 1
+	fi
 		
 	inc=0	
 	#add all
@@ -117,7 +148,12 @@ restore() {
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$1\", \"dnsrecordset\": { \"dnsrecords\": [ $statement ]}}}" "$end")
 	if [ $debug = true ]; then
 		echo "${tmp}"
-	fi	
+	fi
+	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
+		echo "Error: $tmp"
+		logout
+		return 1
+	fi
 	logout
 }
 install() {
