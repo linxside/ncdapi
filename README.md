@@ -4,7 +4,7 @@ The nc API is still under developement and this client also. This client is well
 
 ### Credentials
 To use this script you must replace the values at beginning of the script with your:
-- API Key
+- API KEY
 - API PASSWORD
 - CUSTOMERNUMBER
 
@@ -14,7 +14,10 @@ To use this script you must replace the values at beginning of the script with y
 * delete record
 * get all records
 * backup/restore of zone
-* install
+
+### Requirments
+- jq
+- curl
 
 ### Help
 ```
@@ -28,7 +31,6 @@ If you have a string which is including spaces use "around your string"
 -g   get all Records	ncdapi.sh -g DOAMIN
 -b   backup from Zone	ncdapi.sh -b DOMAIN
 -R   Restore Zone	ncdapi.sh -R DOMAIN FILE
--I   Install Script
 -h   this help
 ```
 developed by linux-insideDE @GPN18
