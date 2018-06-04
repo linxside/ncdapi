@@ -1,8 +1,12 @@
 # ncdapi (inofficial netcup DNS API Client)
+
+## BUG
+At the moment there might be a bug in the api which delete records if you want to modify them. Please don't use modify function at the moment.
+
 ## WARNING
 This client is well tested, but it is possible that some actions provoke a bug, so the use of this client is on your own risk and may result in lost of your zone data.
 
-### Requirments
+### Requirements
 - jq (a json parser)
 - curl
 
@@ -27,6 +31,13 @@ If you have a string which is including spaces use "around your string"
 -b   backup from Zone	ncdapi.sh -b DOMAIN
 -R   Restore Zone	ncdapi.sh -R DOMAIN FILE
 -h   this help
+
+Examples:
+New CAA Record: ncdapi.sh -N @ example.com CAA "0 issue letsencrypt.org"
+New   A Record: ncdapi.sh -N @ example.com A 127.0.0.1
+New  MX Record: ncdapi.sh -N @ example.com MX mail.example.com 20
+Get all records: ncdapi.sh -g example.com
+Delete Record:  ncdapi.sh -D 1234567 @ example.com A 127.0.0.1
 ```
 
 ### Functions
@@ -35,7 +46,7 @@ If you have a string which is including spaces use "around your string"
 * delete record
 * get all records
 * backup/restore of zone
-* If the api returns a failure the session will automatically made invalid and the  plain JSON from te api will be written to stdout
+* If the api returns a failure the session will automatically make invalid and the plain JSON from the api will be written to stdout
 
 ### TODO
 - Add Support for SOA
