@@ -1,12 +1,19 @@
 # ncdapi (inofficial netcup DNS API Client)
 ## WARNING
-The nc API is still under developement and this client also. This client is well tested, but it is possible that some actions provoke a bug, so the use of this client is on your own risk and may result in lost of your zone data (not your domain).
+This client is well tested, but it is possible that some actions provoke a bug, so the use of this client is on your own risk and may result in lost of your zone data.
+
+### Requirments
+- jq (a json parser)
+- curl
 
 ### Credentials
 To use this script you must replace the values at beginning of the script with your:
-- API KEY
-- API PASSWORD
-- CUSTOMERNUMBER
+```
+#Credentials
+apikey=YOUR_API_KEY
+apipw=YOUR_API_PASSWORD
+cid=YOUR_CUSTOMERNUMBER
+```
 
 ### Functions
 * add new record
@@ -15,11 +22,13 @@ To use this script you must replace the values at beginning of the script with y
 * get all records
 * backup/restore of zone
 
-### Requirments
-- jq
-- curl
+### TODO
+- Add Support for SOA
+- Rewrite Backup and Restore for SOA
+- DynDNS capability if the api gets the possobility for per Record TTL in near future
+- ...
 
-### Help
+### How to use
 ```
 IMPORTANT: Only ONE Argument like -N or -dN
 If you have a string which is including spaces use "around your string"
