@@ -14,20 +14,6 @@ apikey=YOUR_API_KEY
 apipw=YOUR_API_PASSWORD
 cid=YOUR_CUSTOMERNUMBER
 ```
-
-### Functions
-* add new record
-* modify record
-* delete record
-* get all records
-* backup/restore of zone
-
-### TODO
-- Add Support for SOA
-- Rewrite Backup and Restore for SOA
-- DynDNS capability if the api gets the possobility for per Record TTL in near future
-- ...
-
 ### How to use
 ```
 IMPORTANT: Only ONE Argument like -N or -dN
@@ -42,4 +28,19 @@ If you have a string which is including spaces use "around your string"
 -R   Restore Zone	ncdapi.sh -R DOMAIN FILE
 -h   this help
 ```
+
+### Functions
+* add new record
+* modify record
+* delete record
+* get all records
+* backup/restore of zone
+* If the api returns a failure the session will automatically made invalid and the  plain JSON from te api will be written to stdout
+
+### TODO
+- Add Support for SOA
+- Rewrite Backup and Restore for SOA
+- DynDNS capability if the api get the possibility for per record TTL in near future
+- ...
+
 developed by linux-insideDE @GPN18
