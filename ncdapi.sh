@@ -36,8 +36,20 @@ logout() {
 	fi
 }
 addRecord() {
-	login	
-	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$2\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"\", \"hostname\": \"$1\", \"type\": \"$3\", \"priority\": \"${5:-"0"}\", \"destination\": \"$4\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" "$end")
+	login
+	if [ "$3" == "CAA" ] || [ "$3" == "caa" ]; then
+		if [ "$(echo "$4" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$4" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$4" | cut -d' ' -f2)" == "issuewild" ];then
+			prepstate=$(echo "$4" | cut -d' ' -f3)			
+			dest=${4//$prepstate/\\"\"$prepstate\\"\"}	
+		else
+			echo "Error: Please Check your CAA Record"
+			logout
+			exit 1
+		fi
+	else
+		dest=$3
+	fi
+	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$2\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"\", \"hostname\": \"$1\", \"type\": \"$3\", \"priority\": \"${5:-"0"}\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" "$end")
 	if [ $debug = true ]; then
 		echo "${tmp}"
 	fi
