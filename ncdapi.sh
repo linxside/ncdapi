@@ -10,7 +10,7 @@ end="https://ccp.netcup.net/run/webservice/servers/endpoint.php?JSON"
 client=""
 debug=false
 
-#Functions
+#functions
 login() {
 	tmp=$(curl -s -X POST -d "{\"action\": \"login\", \"param\": {\"apikey\": \"$apikey\", \"apipassword\": \"$apipw\", \"customernumber\": \"$cid\"}}" "$end")
 	sid=$(echo "${tmp}" | jq -r .responsedata.apisessionid)
@@ -47,7 +47,7 @@ addRecord() {
 			exit 1
 		fi
 	else
-		dest=$3
+		dest=$4
 	fi
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$2\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"\", \"hostname\": \"$1\", \"type\": \"$3\", \"priority\": \"${5:-"0"}\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" "$end")
 	if [ $debug = true ]; then
@@ -62,7 +62,19 @@ addRecord() {
 }
 delRecord() {
 	login
-	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$3\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"$1\", \"hostname\": \"$2\", \"type\": \"$4\", \"priority\": \"${6:-"0"}\", \"destination\": \"$5\", \"deleterecord\": \"TRUE\", \"state\": \"yes\"} ]}}}" "$end")
+	if [ "$4" == "CAA" ] || [ "$4" == "caa" ]; then
+		if [ "$(echo "$5" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "issuewild" ];then
+			prepstate=$(echo "$5" | cut -d' ' -f3)			
+			dest=${5//$prepstate/\\"\"$prepstate\\"\"}	
+		else
+			echo "Error: Please Check your CAA Record"
+			logout
+			exit 1
+		fi
+	else
+		dest=$5
+	fi
+	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$3\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"$1\", \"hostname\": \"$2\", \"type\": \"$4\", \"priority\": \"${6:-"0"}\", \"destination\": \"$dest\", \"deleterecord\": \"TRUE\", \"state\": \"yes\"} ]}}}" "$end")
 	if [ $debug = true ]; then
 		echo "${tmp}"
 	fi
@@ -74,8 +86,20 @@ delRecord() {
 	logout
 }
 modRecord() {
-	login	
-	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$3\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"$1\", \"hostname\": \"$2\", \"type\": \"$4\", \"priority\": \"${6:-"0"}\", \"destination\": \"$5\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" "$end")
+	login
+	if [ "$4" == "CAA" ] || [ "$4" == "caa" ]; then
+		if [ "$(echo "$5" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "issuewild" ];then
+			prepstate=$(echo "$5" | cut -d' ' -f3)			
+			dest=${5//$prepstate/\\"\"$prepstate\\"\"}	
+		else
+			echo "Error: Please Check your CAA Record"
+			logout
+			exit 1
+		fi
+	else
+		dest=$5
+	fi
+	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$3\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"$1\", \"hostname\": \"$2\", \"type\": \"$4\", \"priority\": \"${6:-"0"}\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" "$end")
 	if [ $debug = true ]; then
 		echo "${tmp}"
 	fi
@@ -168,35 +192,31 @@ restore() {
 	fi
 	logout
 }
-install() {
-	nm=$(echo "$0" | sed 's/\.\///g')
-	mkdir "$(pwd)"/api/
-	cp "$0" "$(pwd)"/api/
-	chmod +x "$(pwd)"/api/"$nm"
-	st="alias ncdapi='$(pwd)/api/$nm'"
-	echo "$st" >> ~/.bashrc
-}
-remove() {	
-	tmp=$(cat ~/.bashrc)
-	echo "$tmp" | sed "s/alias[:space:]ncdapi\\=\\'\$\\(pwd\\)\\/api\\/$nm\\'//g" > ~/.bashrc
-	
-}
 help() {
 	echo "IMPORTANT: Only ONE Argument like -N or -dN"
 	echo "If you have a string which is including spaces use \"around your string\""
 	echo ""
-	echo "-d   Debug Mode   ncapi.sh -d..."
-	echo "-N   NEW Record	  ncapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
-	echo "-M   MOD Record	  ncapi.sh -N ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
-	echo "-D   DEL Record	  ncapi.sh -D ID HOST DOMAIN HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
-	echo "-g   get all Records	ncapi.sh -g DOAMIN"
-	echo "-b   backup from Zone	ncapi.sh -b DOMAIN"
-	echo "-R   Restore Zone	ncapi.sh -R DOMAIN DATEI"
+	echo "-d   Debug Mode   ncdapi.sh -d..."
+	echo "-N   NEW Record	  ncdapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
+	echo "-M   MOD Record	  ncdapi.sh -N ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
+	echo "-D   DEL Record	  ncdapi.sh -D ID HOST DOMAIN HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]"
+	echo "-g   get all Records	ncdapi.sh -g DOAMIN"
+	echo "-b   backup from Zone	ncdapi.sh -b DOMAIN"
+	echo "-R   Restore Zone	ncdapi.sh -R DOMAIN DATEI"
 	echo "-I   Install Script"
 	echo "-h   this help"
+	echo ""
+	echo "Examples:"
+	echo "New CAA Record: ncdapi.sh -N @ example.com CAA \"0 issue letsencrypt.org\""
+	echo "New   A Record: ncdapi.sh -N @ example.com A 127.0.0.1"
+	echo "New  MX Record: ncdapi.sh -N @ example.com MX mail.example.com 20"
+	echo ""
+	echo "Get all records: ncdapi.sh -g example.com"
+	echo ""
+	echo "Delete Record:  ncdapi.sh -D 1234567 @ example.com A 127.0.0.1"
 }
 
-#Begin Script
+#begin script
 
 if [ $# -eq 0 ]; then
 	echo "No Argument"
