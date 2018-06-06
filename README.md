@@ -1,8 +1,5 @@
 # ncdapi (inofficial netcup DNS API Client)
 
-## BUG
-At the moment there might be a bug in the api which delete records if you want to modify them. Please don't use modify function at the moment.
-
 ## WARNING
 This client is well tested, but it is possible that some actions provoke a bug, so the use of this client is on your own risk and may result in lost of your zone data.
 
