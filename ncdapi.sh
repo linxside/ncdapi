@@ -219,6 +219,20 @@ restore() {
 		type=$(echo "$currec" | jq -r .[$inc].type)
 		prio=$(echo "$currec" | jq -r .[$inc].priority)
 		dest=$(echo "$currec" | jq -r .[$inc].destination)
+		if [ "$type" == "CAA" ] || [ "$type" == "caa" ]; then
+			if [ "$(echo "$dest" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "issuewild" ];then
+				prepstate=$(echo "$dest" | cut -d' ' -f3)
+				# shellcheck disable=SC2001
+				dest=$(echo "$dest" | sed 's/\"/\\"/g')
+			else
+				echo "Error: Please Check your CAA Record"
+				logout
+				exit 1
+			fi
+		else
+			dest=$dest
+		fi
+		
 		if [ "$inc" = "$((len-1))" ]; then
 			statement+="{\"id\": \"$id\", \"hostname\": \"$host\", \"type\": \"$type\", \"priority\": \"$prio\", \"destination\": \"$dest\", \"deleterecord\": \"TRUE\", \"state\": \"yes\"}"
 	    else
@@ -238,17 +252,27 @@ restore() {
 	fi
 	
 	inc=0	
-	echo "HHHHH"
 	#add all
 	statement=""
 	len=$(echo "$bfile" | jq '.records | length')
-	echo $len
-	echo $bfile
 	while [ "$inc" != "$len" ] ; do		
 		host=$(echo "$bfile" | jq -r .records[$inc].hostname)
 		type=$(echo "$bfile" | jq -r .records[$inc].type)
 		prio=$(echo "$bfile" | jq -r .records[$inc].priority)
 		dest=$(echo "$bfile" | jq -r .records[$inc].destination)		
+		if [ "$type" == "CAA" ] || [ "$type" == "caa" ]; then
+			if [ "$(echo "$dest" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "issuewild" ];then
+				prepstate=$(echo "$dest" | cut -d' ' -f3)
+				# shellcheck disable=SC2001
+				dest=$(echo "$dest" | sed 's/\"/\\"/g')
+			else
+				echo "Error: Please Check your CAA Record"
+				logout
+				exit 1
+			fi
+		else
+			dest=$dest
+		fi
 		if [ "$inc" = "$((len-1))" ]; then
 			statement+="{\"id\": \"\", \"hostname\": \"$host\", \"type\": \"$type\", \"priority\": \"$prio\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"}"
 	    else
