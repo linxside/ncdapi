@@ -25,8 +25,8 @@ If you have a string which is including spaces use "around your string"
   
 -d   Debug Mode         ncdapi.sh -d...
 -N   NEW Record         ncdapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
--M   MOD Record         ncdapi.sh -N ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
--D   DEL Record         ncdapi.sh -D ID HOST DOMAIN HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
+-M   MOD Record         ncdapi.sh -M ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
+-D   DEL Record         ncdapi.sh -D ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
 -g   get all Records	ncdapi.sh -g DOAMIN
 -b   backup from Zone	ncdapi.sh -b DOMAIN
 -R   Restore Zone	ncdapi.sh -R FILE
