@@ -99,7 +99,7 @@ modRecord() {
 	else
 		dest=$5
 	fi
-	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$3\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"$1\", \"hostname\": \"$2\", \"type\": \"$4\", \"priority\": \"${6:-"0"}\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"} ]}}}" "$end")
+	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$3\", \"dnsrecordset\": { \"dnsrecords\": [ {\"id\": \"$1\", \"hostname\": \"$2\", \"type\": \"$4\", \"priority\": \"${6:-"0"}\", \"destination\": \"$dest\", \"deleterecord\": \"FALSE\", \"state\": \"yes\"} ]}}}" "$end")
 	if [ $debug = true ]; then
 		echo "${tmp}"
 	fi
@@ -175,7 +175,7 @@ getRecords() {
 }
 getRecordsONESESSION() {		
 	tmp=$(curl -s -X POST -d "{\"action\": \"infoDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\", \"domainname\": \"$1\"}}" "$end")
-	xxd=$(echo "$tmp" | jq -r '.responsedata')
+	xxd=$(echo "$tmp" | jq -r '.responsedata.dnsrecords')
 	echo "$xxd"	
 }
 backup() {
@@ -196,7 +196,7 @@ restore() {
 	retry=$(echo "$bfile" | jq -r '.soa.retry')
 	expire=$(echo "$bfile" | jq -r '.soa.expire')
 	dnssecstatus=$(echo "$bfile" | jq -r '.soa.dnssecstatus')
-	currec=$(getRecordsONESESSION "$name" | jq .dnsrecords)
+	currec=$(getRecordsONESESSION "$name")
 	inc=0
 	
 	#update soa	
@@ -238,9 +238,12 @@ restore() {
 	fi
 	
 	inc=0	
+	echo "HHHHH"
 	#add all
 	statement=""
 	len=$(echo "$bfile" | jq '.records | length')
+	echo $len
+	echo $bfile
 	while [ "$inc" != "$len" ] ; do		
 		host=$(echo "$bfile" | jq -r .records[$inc].hostname)
 		type=$(echo "$bfile" | jq -r .records[$inc].type)
@@ -306,7 +309,7 @@ while getopts 'NdDgMbRhslS' opt ; do
 		b) backup "$2";;
 		R) restore "$2";;
 		s) getSOA "$2";;
-		S) setSOA "$2" "$3" "$4" "$5" "$6" "$7";;
+		S) setSOA "$2" "$3" "$4" "$5" "$6" "$7";;		
 		l) listDomains "$2" ;;
 		h) help;;
 		*) echo "Invalid Argument";;
