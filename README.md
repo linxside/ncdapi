@@ -24,11 +24,11 @@ If you have a string which is including spaces use "around your string"
 -N   NEW Record         ncdapi.sh -N HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
 -M   MOD Record         ncdapi.sh -M ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
 -D   DEL Record         ncdapi.sh -D ID HOST DOMAIN RECORDTYPE DESTINATION [PRIORITY]
--g   get all Records	ncdapi.sh -g DOAMIN
+-g   get all Records	ncdapi.sh -g DOMAIN
 -b   backup from Zone	ncdapi.sh -b DOMAIN
 -R   Restore Zone	ncdapi.sh -R FILE
--s   get SOA    	ncdapi.sh -s DOAMIN
--S   change SOA    	ncdapi.sh -S DOAMIN TTL REFRESH RETRY EXPIRE DNSSECSTATUS
+-s   get SOA    	ncdapi.sh -s DOMAIN
+-S   change SOA    	ncdapi.sh -S DOMAIN TTL REFRESH RETRY EXPIRE DNSSECSTATUS
 -l   list all Domains	ncdapi.sh -l
 -h   this help
 
