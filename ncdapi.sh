@@ -58,7 +58,7 @@ addRecord() {
 		logout
 		return 1
 	fi
-	echo $(echo "${tmp}" | jq --arg host "$1" --arg type "$3" --arg dest "$dest" '.responsedata.dnsrecords[] | select(.hostname==$host and .type==$type and .destination==$dest) .id')
+	echo $(echo "${tmp}" | jq --arg host "$1" --arg type "$3" --arg dest "$dest" '.responsedata.dnsrecords[] | select(.hostname==$host and .type==$type and .destination==$dest) .id' | tr -d \")
 	logout
 }
 delRecord() {
