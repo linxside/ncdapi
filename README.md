@@ -53,4 +53,20 @@ Change SOA:	 ncdapi.sh -S example.com 3600 28800 7200 1209600 true
 - DynDNS capability if the api get the possibility for per record TTL in near future
 - ...
 
+## How to obtain the DNS entry ID?
+
+First, login to the [netcup](https://netcup.de) website. Navigate to "Domains" -> choose your domain -> "DNS" section:
+
+![netcup NDS section](./screenshots/netcup-1.png)
+
+Then click with the right mouse button on the desired DNS entry from which the ID should come from. Choose the "inspect element" menue entry.
+
+![DNS entries for a domain](./screenshots/netcup-2.png)
+
+Now you should see the developer tools and a `<input>`-element. The number in the `name`-attribute's value after `record[` is the wanted number.
+
+![DNS entry's ID](./screenshots/netcup-3.png)
+
+Copy this ID (here: 12176576) into your script.
+
 developed by linux-insideDE @GPN18
