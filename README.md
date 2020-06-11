@@ -1,4 +1,7 @@
-# ncdapi (inofficial netcup DNS API Client)
+# UNMAINTAINED ncdapi (inofficial netcup DNS API Client)
+
+This script is currently unmaintained. Due to the fact that changes need at least 10 minutes to be applied and the api still does not support setting a ttl per record.
+
 
 ## WARNING
 This client is well tested, but it is possible that some actions provoke a bug, so the use of this client is on your own risk and may result in lost of your zone data.
