@@ -38,9 +38,9 @@ logout() {
 addRecord() {
 	login
 	if [ "$3" == "CAA" ] || [ "$3" == "caa" ]; then
-		if [ "$(echo "$4" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$4" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$4" | cut -d' ' -f2)" == "issuewild" ];then
-			prepstate=$(echo "$4" | cut -d' ' -f3)			
-			dest=${4//$prepstate/\\"\"$prepstate\\"\"}	
+		if [ "$(echo "$4" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$4" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$4" | cut -d' ' -f2)" == "issuewild" ]; then
+			prepstate=$(echo "$4" | cut -d' ' -f3)
+			dest=${4//$prepstate/\\"\"$prepstate\\"\"}
 		else
 			echo "Error: Please Check your CAA Record"
 			logout
@@ -58,15 +58,15 @@ addRecord() {
 		logout
 		return 1
 	fi
-	echo $(echo "${tmp}" | jq --arg host "$1" --arg type "$3" --arg dest "$dest" '.responsedata.dnsrecords[] | select(.hostname==$host and .type==$type and .destination==$dest) .id' | tr -d \")
+	echo "${tmp}" | jq --arg host "$1" --arg type "$3" --arg dest "$dest" '.responsedata.dnsrecords[] | select(.hostname==$host and .type==$type and .destination==$dest) .id' | tr -d \"
 	logout
 }
 delRecord() {
 	login
 	if [ "$4" == "CAA" ] || [ "$4" == "caa" ]; then
-		if [ "$(echo "$5" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "issuewild" ];then
-			prepstate=$(echo "$5" | cut -d' ' -f3)			
-			dest=${5//$prepstate/\\"\"$prepstate\\"\"}	
+		if [ "$(echo "$5" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "issuewild" ]; then
+			prepstate=$(echo "$5" | cut -d' ' -f3)
+			dest=${5//$prepstate/\\"\"$prepstate\\"\"}
 		else
 			echo "Error: Please Check your CAA Record"
 			logout
@@ -89,9 +89,9 @@ delRecord() {
 modRecord() {
 	login
 	if [ "$4" == "CAA" ] || [ "$4" == "caa" ]; then
-		if [ "$(echo "$5" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "issuewild" ];then
-			prepstate=$(echo "$5" | cut -d' ' -f3)			
-			dest=${5//$prepstate/\\"\"$prepstate\\"\"}	
+		if [ "$(echo "$5" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$5" | cut -d' ' -f2)" == "issuewild" ]; then
+			prepstate=$(echo "$5" | cut -d' ' -f3)
+			dest=${5//$prepstate/\\"\"$prepstate\\"\"}
 		else
 			echo "Error: Please Check your CAA Record"
 			logout
@@ -116,7 +116,7 @@ getSOA() {
 	tmp=$(curl -s -X POST -d "{\"action\": \"infoDnsZone\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\", \"domainname\": \"$1\"}}" "$end")
 	if [ $debug = true ]; then
 		echo "$tmp"
-	fi	
+	fi
 	if [ "$(echo "$tmp" | jq -r .status)" != "success" ]; then
 		echo "Error: $tmp"
 		logout
@@ -145,7 +145,7 @@ setSOA() {
 	logout
 }
 listDomains() {
-	login	
+	login
 	tmp=$(curl -s -X POST -d "{\"action\": \"listallDomains\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\", \"domainname\": \"$1\"}}" "$end")
 	if [ $debug = true ]; then
 		echo "$tmp"
@@ -174,10 +174,10 @@ getRecords() {
 	echo "$xxd"
 	logout
 }
-getRecordsONESESSION() {		
+getRecordsONESESSION() {
 	tmp=$(curl -s -X POST -d "{\"action\": \"infoDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\", \"domainname\": \"$1\"}}" "$end")
 	xxd=$(echo "$tmp" | jq -r '.responsedata.dnsrecords')
-	echo "$xxd"	
+	echo "$xxd"
 }
 backup() {
 	login
@@ -199,8 +199,8 @@ restore() {
 	dnssecstatus=$(echo "$bfile" | jq -r '.soa.dnssecstatus')
 	currec=$(getRecordsONESESSION "$name")
 	inc=0
-	
-	#update soa	
+
+	#update soa
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsZone\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$name\", \"dnszone\": { \"name\": \"$name\", \"ttl\": \"$ttl\", \"serial\": \"\", \"refresh\": \"$refresh\", \"retry\": \"$retry\", \"expire\": \"$expire\", \"dnssecstatus\": \"$dnssecstatus\"} }}" "$end")
 	if [ $debug = true ]; then
 		echo "${tmp}"
@@ -210,18 +210,18 @@ restore() {
 		logout
 		return 1
 	fi
-	
+
 	#del all
 	len=$(echo "$currec" | jq '. | length')
 	statement=""
-	while  [ "$inc" != "$len" ]  ; do
+	while [ "$inc" != "$len" ]; do
 		id=$(echo "$currec" | jq -r .[$inc].id)
 		host=$(echo "$currec" | jq -r .[$inc].hostname)
 		type=$(echo "$currec" | jq -r .[$inc].type)
 		prio=$(echo "$currec" | jq -r .[$inc].priority)
 		dest=$(echo "$currec" | jq -r .[$inc].destination)
 		if [ "$type" == "CAA" ] || [ "$type" == "caa" ]; then
-			if [ "$(echo "$dest" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "issuewild" ];then
+			if [ "$(echo "$dest" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "issuewild" ]; then
 				prepstate=$(echo "$dest" | cut -d' ' -f3)
 				# shellcheck disable=SC2001
 				dest=$(echo "$dest" | sed 's/\"/\\"/g')
@@ -233,13 +233,13 @@ restore() {
 		else
 			dest=$dest
 		fi
-		
+
 		if [ "$inc" = "$((len-1))" ]; then
 			statement+="{\"id\": \"$id\", \"hostname\": \"$host\", \"type\": \"$type\", \"priority\": \"$prio\", \"destination\": \"$dest\", \"deleterecord\": \"TRUE\", \"state\": \"yes\"}"
-	    else
+		else
 			statement+="{\"id\": \"$id\", \"hostname\": \"$host\", \"type\": \"$type\", \"priority\": \"$prio\", \"destination\": \"$dest\", \"deleterecord\": \"TRUE\", \"state\": \"yes\"},"
 
-	    fi
+		fi
 		inc=$((inc+1))
 	done
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$name\", \"dnsrecordset\": { \"dnsrecords\": [ $statement ]}}}" "$end")
@@ -251,18 +251,18 @@ restore() {
 		logout
 		return 1
 	fi
-	
-	inc=0	
+
+	inc=0
 	#add all
 	statement=""
 	len=$(echo "$bfile" | jq '.records | length')
-	while [ "$inc" != "$len" ] ; do		
+	while [ "$inc" != "$len" ]; do
 		host=$(echo "$bfile" | jq -r .records[$inc].hostname)
 		type=$(echo "$bfile" | jq -r .records[$inc].type)
 		prio=$(echo "$bfile" | jq -r .records[$inc].priority)
-		dest=$(echo "$bfile" | jq -r .records[$inc].destination)		
+		dest=$(echo "$bfile" | jq -r .records[$inc].destination)
 		if [ "$type" == "CAA" ] || [ "$type" == "caa" ]; then
-			if [ "$(echo "$dest" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "issuewild" ];then
+			if [ "$(echo "$dest" | cut -d' ' -f2)" == "issue" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "iodef" ] || [ "$(echo "$dest" | cut -d' ' -f2)" == "issuewild" ]; then
 				prepstate=$(echo "$dest" | cut -d' ' -f3)
 				# shellcheck disable=SC2001
 				dest=$(echo "$dest" | sed 's/\"/\\"/g')
@@ -276,9 +276,9 @@ restore() {
 		fi
 		if [ "$inc" = "$((len-1))" ]; then
 			statement+="{\"id\": \"\", \"hostname\": \"$host\", \"type\": \"$type\", \"priority\": \"$prio\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"}"
-	    else
+		else
 			statement+="{\"id\": \"\", \"hostname\": \"$host\", \"type\": \"$type\", \"priority\": \"$prio\", \"destination\": \"$dest\", \"deleterecord\": \"false\", \"state\": \"yes\"},"
-	    fi	   
+		fi
 		inc=$((inc+1))
 	done
 	tmp=$(curl -s -X POST -d "{\"action\": \"updateDnsRecords\", \"param\": {\"apikey\": \"$apikey\", \"apisessionid\": \"$sid\", \"customernumber\": \"$cid\",\"clientrequestid\": \"$client\" , \"domainname\": \"$name\", \"dnsrecordset\": { \"dnsrecords\": [ $statement ]}}}" "$end")
@@ -289,7 +289,7 @@ restore() {
 		echo "Error: $tmp"
 		logout
 		return 1
-	fi	
+	fi
 	logout
 }
 help() {
@@ -324,7 +324,7 @@ if [ $# -eq 0 ]; then
 	help
 fi
 
-while getopts 'NdDgMbRhslS' opt ; do
+while getopts 'NdDgMbRhslS' opt; do
 	case "$opt" in
 		d) debug=true;;
 		N) addRecord "$2" "$3" "$4" "$5" "$6";;
@@ -334,7 +334,7 @@ while getopts 'NdDgMbRhslS' opt ; do
 		b) backup "$2";;
 		R) restore "$2";;
 		s) getSOA "$2";;
-		S) setSOA "$2" "$3" "$4" "$5" "$6" "$7";;		
+		S) setSOA "$2" "$3" "$4" "$5" "$6" "$7";;
 		l) listDomains "$2" ;;
 		h) help;;
 		*) echo "Invalid Argument";;
