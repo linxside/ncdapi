@@ -2,6 +2,8 @@
 
 This script is currently unmaintained. Due to the fact that changes need at least 10 minutes to be applied and the api still does not support setting a ttl per record.
 
+> [!IMPORTANT]
+> This repo was archived, because the client uses an old API. The entire DNS infrastructure and API could hopefully be replaced by an excellent one in 2024.
 
 ## WARNING
 This client is well tested, but it is possible that some actions provoke a bug, so the use of this client is on your own risk and may result in lost of your zone data.
@@ -72,4 +74,4 @@ Now you should see the developer tools and a `<input>`-element. The number in th
 
 Copy this ID (here: 12176576) into your script.
 
-developed by linux-insideDE @GPN18
+developed by linxside @GPN18
